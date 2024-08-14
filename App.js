@@ -1,9 +1,12 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Alert, PermissionsAndroid } from 'react-native';
 import { Provider, useSelector } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import Header from './src/components/Header';
-import store from './src/redux/store';
+import store, { persistor } from './src/redux/store';
 import ThemesScreen from './src/screens/ThemesScreen';
 import TodoListScreen from './src/screens/TodoListScreen';
 
@@ -21,8 +24,48 @@ const useAppTheme = () => {
   };
 };
 
+const requestStoragePermission = async () => {
+  try {
+    const permissionRequested = await AsyncStorage.getItem('storagePermissionRequested');
+    
+    if (permissionRequested === null) {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission',
+          message: 'This app needs access to your storage to save and load data.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        }
+      );
+      
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Storage permission granted');
+      } else {
+        console.log('Storage permission denied');
+        Alert.alert(
+          'Permission Denied',
+          'Storage permission is required for this app to function properly.',
+          [{ text: 'OK' }]
+        );
+      }
+
+      await AsyncStorage.setItem('storagePermissionRequested', 'true');
+    } else {
+      console.log('Storage permission already requested');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
 const App = () => {
   const theme = useAppTheme();
+
+  useEffect(() => {
+    requestStoragePermission();
+  }, []);
 
   return (
     <NavigationContainer theme={theme}>
@@ -40,7 +83,9 @@ const App = () => {
 
 const AppWrapper = () => (
   <Provider store={store}>
-    <App />
+    <PersistGate loading={null} persistor={persistor}>
+      <App />
+    </PersistGate>
   </Provider>
 );
 

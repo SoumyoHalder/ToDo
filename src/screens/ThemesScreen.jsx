@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
-import { Animated, Dimensions, Image, FlatList as RNFlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Animated, Dimensions, Image, LogBox, FlatList as RNFlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setBackgroundImage } from '../redux/themeSlice';
 
@@ -24,7 +24,9 @@ const images = [
   require('../assets/panda.jpg'),
   require('../assets/whale.jpg'),
 ];
-
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
 const FlatList = Animated.createAnimatedComponent(RNFlatList);
 
 const ThemesScreen = ({ navigation }) => {

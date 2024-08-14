@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ToDoApp",
+    "name": "ToDo",
     "slug": "todolist",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,14 +15,24 @@
       "supportsTablet": true
     },
     "android": {
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/todo-sticky-note.png",
+        "foregroundImage": "./assets/todo-icon1.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.soumyo_halder.todolist"
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "name": "ToDo"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b19f9908-91b9-4137-a266-697de14139f9"
+      }
     }
   }
 }
