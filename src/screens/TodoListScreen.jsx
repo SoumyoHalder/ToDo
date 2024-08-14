@@ -2,14 +2,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useRef, useState } from 'react';
 import { Animated, ImageBackground, Keyboard, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import InputTodo from '../components/InputTodo'; // Ensure InputTodo is the default export
-import TodoList from '../components/TodoList'; // Ensure TodoList is the default export
-import { addTodo, deleteTodo, toggleComplete } from '../redux/todoslice';
+import InputTodo from '../components/InputTodo';
+import TodoList from '../components/TodoList';
+import { addTodo, deleteTodo, editTodo, toggleComplete } from '../redux/todoslice';
 
 const TodoListScreen = () => {
   const [showInputTodo, setShowInputTodo] = useState(false);
-  const [animation] = useState(new Animated.Value(0)); // For slide up animation
-  const scrollY = useRef(new Animated.Value(0)).current; // For scroll position tracking
+  const [editingTodo, setEditingTodo] = useState(null);
+  const [animation] = useState(new Animated.Value(0));
+  const scrollY = useRef(new Animated.Value(0)).current;
   const todos = useSelector((state) => state.todos.todos);
   const backgroundImage = useSelector((state) => state.theme.backgroundImage) || require('../assets/main.jpg');
   const dispatch = useDispatch();
@@ -27,15 +28,17 @@ const TodoListScreen = () => {
     dispatch(deleteTodo(id));
   };
 
+  const handleUpdateTodo = (id, newText) => {
+    dispatch(editTodo({ id, newText }));
+  };
+
   const showInputTodoBar = () => {
     setShowInputTodo(true);
     Animated.timing(animation, {
       toValue: 1,
       duration: 300,
       useNativeDriver: true,
-    }).start(() => Keyboard.addListener('keyboardDidShow', () => {
-      setShowInputTodo(true);
-    }));
+    }).start();
   };
 
   const hideInputTodo = () => {
@@ -70,6 +73,7 @@ const TodoListScreen = () => {
               todos={todos}
               onToggleComplete={handleToggleComplete}
               onDelete={handleDeleteTodo}
+              onUpdateTodo={handleUpdateTodo}
             />
           </ScrollView>
         </Animated.View>

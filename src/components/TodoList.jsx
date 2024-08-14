@@ -1,10 +1,41 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const TodoList = ({ todos, onToggleComplete, onDelete }) => {
+const TodoList = ({ todos, onToggleComplete, onDelete, onUpdateTodo }) => {
+  const [editingId, setEditingId] = useState(null);
+  const [editableText, setEditableText] = useState("");
+  const textInputRef = useRef(null); // Create a ref for TextInput
+
+  // Focus on the TextInput and move cursor to the end of the text
+  useEffect(() => {
+    if (editingId !== null && textInputRef.current) {
+      textInputRef.current.focus(); // Focus on the TextInput to open the keyboard
+      // Move cursor to the end of the text
+      textInputRef.current.setSelection(editableText.length, editableText.length);
+    }
+  }, [editingId, editableText]);
+
+  const handleEditPress = (todo) => {
+    setEditingId(todo.id);
+    setEditableText(todo.text);
+  };
+
+  const handleSavePress = () => {
+    if (editableText.trim()) {
+      onUpdateTodo(editingId, editableText);
+      setEditingId(null);
+      setEditableText("");
+    }
+  };
+
+  const handleCancelPress = () => {
+    setEditingId(null);
+    setEditableText("");
+  };
+
   return (
     <View style={styles.listContainer}>
       {todos.map((todo) => (
@@ -25,26 +56,53 @@ const TodoList = ({ todos, onToggleComplete, onDelete }) => {
             }
             style={[styles.todoItemContent, { backgroundColor: todo.color }]}
           >
-            <TouchableOpacity
-              onPress={() => onToggleComplete(todo.id)}
-              style={styles.checkboxContainer}
-            >
-              <Checkbox
-                value={todo.completed}
-                onValueChange={() => onToggleComplete(todo.id)}
-                style={styles.checkbox}
-              />
-              <Text
-                style={
-                  todo.completed ? styles.completedText : styles.incompleteText
-                }
-              >
-                {todo.text}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => onDelete(todo.id)}>
-              <MaterialIcons name="delete" size={24} color="red" />
-            </TouchableOpacity>
+            {editingId === todo.id ? (
+              <View style={styles.editContainer}>
+                <TextInput
+                  ref={textInputRef} 
+                  style={styles.editableTextInput}
+                  value={editableText}
+                  onChangeText={setEditableText}
+                  onSubmitEditing={handleSavePress}
+                />
+                <TouchableOpacity onPress={handleSavePress} style={styles.saveButton}>
+                  <MaterialIcons name="check" size={30} color="green" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleCancelPress} style={styles.cancelButton}>
+                  <MaterialIcons name="cancel" size={30} color="red" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <>
+                <TouchableOpacity
+                  onPress={() => onToggleComplete(todo.id)}
+                  style={styles.checkboxContainer}
+                >
+                  <Checkbox
+                    value={todo.completed}
+                    onValueChange={() => onToggleComplete(todo.id)}
+                    style={styles.checkbox}
+                  />
+                  <Text
+                    style={
+                      todo.completed
+                        ? styles.completedText
+                        : styles.incompleteText
+                    }
+                  >
+                    {todo.text}
+                  </Text>
+                </TouchableOpacity>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity onPress={() => handleEditPress(todo)}>
+                    <MaterialIcons name="edit" size={30} color="#333" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => onDelete(todo.id)}>
+                    <MaterialIcons name="delete" size={30} color="red" />
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </LinearGradient>
         </View>
       ))}
@@ -72,7 +130,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 15,
+    padding: 12,
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -84,11 +142,34 @@ const styles = StyleSheet.create({
   completedText: {
     textDecorationLine: "line-through",
     color: "gray",
-    fontSize: 16,
+    fontSize: 18,
   },
   incompleteText: {
     color: "#333",
-    fontSize: 16,
+    fontSize: 18,
+  },
+  editableTextInput: {
+    fontSize: 18,
+    color: "#333",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    flex: 1,
+    marginRight: 10,
+  },
+  editContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  saveButton: {
+    marginLeft: 10,
+  },
+  cancelButton: {
+    marginLeft: 10,
+  },
+  iconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
 });
 

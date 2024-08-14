@@ -4,14 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   BackHandler,
-  FlatList,
-  Keyboard,
-  KeyboardAvoidingView,
+  FlatList, Keyboard, KeyboardAvoidingView,
   Platform,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { useSelector } from "react-redux";
 
@@ -35,7 +33,11 @@ const InputTodo = ({ onAddTodo, onClose }) => {
   const theme = useSelector((state) => state.displayTheme.mode);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    const focusInput = () => {
+      inputRef.current?.focus();
+    };
+
+    focusInput();
 
     const backAction = () => {
       Keyboard.dismiss();
@@ -66,11 +68,11 @@ const InputTodo = ({ onAddTodo, onClose }) => {
   };
 
   const toggleColors = () => {
-    Keyboard.dismiss(); 
-    setShowColors(!showColors);
+    Keyboard.dismiss();
+    setShowColors((prev) => !prev);
     Animated.timing(animation, {
       toValue: showColors ? 0 : 1,
-      duration: 300,
+      duration: 400,
       useNativeDriver: true,
     }).start();
   };
@@ -96,6 +98,8 @@ const InputTodo = ({ onAddTodo, onClose }) => {
   const borderColor = theme === "dark" ? "#888" : "#ccc";
   const colorPickerBackground = theme === "dark" ? "#222" : "#fff";
   const checkMarkColor = theme === "dark" ? "#fff" : "#000";
+  const textColor = theme === "dark" ? "#fff" : "#000";
+
 
   return (
     <KeyboardAvoidingView
@@ -122,7 +126,7 @@ const InputTodo = ({ onAddTodo, onClose }) => {
             ref={inputRef}
             style={[
               styles.input,
-              { backgroundColor: inputBackgroundColor, borderColor },
+              { backgroundColor: inputBackgroundColor, borderColor, color: textColor},
             ]}
             value={text}
             onChangeText={setText}
@@ -222,7 +226,7 @@ const styles = StyleSheet.create({
     elevation: 10,
     zIndex: 1000,
     position: "absolute",
-    top: 30,
+    top: 20,
     left: 30,
     right: 30,
   },

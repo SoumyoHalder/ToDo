@@ -12,7 +12,7 @@ const todosSlice = createSlice({
       const newTodo = {
         id: Date.now(),
         text: action.payload.text,
-        color: action.payload.color || 'white', 
+        color: action.payload.color || 'white', // Default color
         completed: false,
       };
       state.todos.push(newTodo);
@@ -32,7 +32,7 @@ const todosSlice = createSlice({
       if (index !== -1) {
         state.todos[index].text = newText;
         if (color) {
-          state.todos[index].color = color; 
+          state.todos[index].color = color; // Update color if provided
         }
       }
     },
