@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "ToDoApp",
+    "slug": "todolist",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/todo-icon1.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/loading-screen-todo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/todo-sticky-note.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "ToDo"
+    }
+  }
+}
